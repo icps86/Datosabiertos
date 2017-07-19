@@ -1,0 +1,52 @@
+---
+title: "Buildings_Miraflores"
+author: "ignacio"
+date: "February 28, 2017"
+output: github_document
+html_document:
+  df_print: paged
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( message=F, warning=F )
+
+library(jsonlite)
+library(dplyr)
+library(pander)
+
+setwd("C:/Users/icps/Dropbox/3. Maxwell/3. Spring Term/5. Data Driven II/Labs/Datosabiertos/")
+
+```
+
+
+```{r}
+#api <- "537781dc45bcabb263610a9854da2ad9b8009d4c"
+
+#licencias de edificacion
+dat <- read.csv("lic_de_edif.csv")
+dim(dat)
+colnames(dat)
+head(dat)
+
+#type of licenses
+x <- table(dat$ASUNTO)
+asunto <- data.frame(Use = names(x), Total = as.numeric(x))
+asunto<- tbl_df(asunto)
+
+asunto <- arrange(asunto, desc(Total))
+
+asunto[1:10,1]
+
+dat <- select(dat, ANIO, VIA, CODIGO.MES, MES, ST)
+dat16 <- dat[dat$ANIO == 2016,]
+dat16g <- group_by(dat16, CODIGO.MES)
+dat16g <- summarize(dat16g, TOTAL = sum(ST))
+
+
+class(asunto)
+#USes of the property
+uso <- data.frame(Use = names(table(dat$USO)), Total = as.numeric(table(dat$USO)))
+
+```
+

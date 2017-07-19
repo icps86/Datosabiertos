@@ -1,0 +1,111 @@
+---
+title: "DA"
+author: "ignacio"
+date: "February 28, 2017"
+output: github_document
+html_document:
+  df_print: paged
+  keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( message=F, warning=F )
+
+library(jsonlite)
+#install.packages("httr")
+library(httr)
+library(dplyr)
+library(pander)
+library(RCurl)
+
+setwd("C:/Users/icps/Dropbox/3. Maxwell/3. Spring Term/5. Data Driven II/Labs/Datosabiertos/")
+
+```
+
+```{r}
+api <- "537781dc45bcabb263610a9854da2ad9b8009d4c"
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/EDUCA/data.csv/?auth_key=", api))
+
+
+```
+
+
+```{r}
+#CAMPA-YO-ESTAC-PESIM
+
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/CAMPA-YO-ESTAC-PESIM/data.csv/?auth_key=", api))
+
+colnames(dat)[6] <- "ST"
+
+dat<- tbl_df(dat)
+dat <- select(dat, ANIO, VIA, CODIGO.MES, MES, ST)
+dat16 <- dat[dat$ANIO == 2016,]
+dat16g <- group_by(dat16, CODIGO.MES)
+dat16g <- summarize(dat16g, TOTAL = sum(ST))
+
+sum(dat16g$TOTAL)
+
+barplot(dat16g$TOTAL, main = "Infracciones de la Campaña \"YO ESTACIONO PÉSIMO\" \n Distrito de Miraflores, 2016", names.arg= c("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"), cex.names = .7, col = "steelblue")
+
+
+
+#FOTO PAPELETAS
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/FOTO-PAPEL-EMITI/data.csv/?auth_key=", api))
+
+colnames(dat)
+head(dat)
+
+dat<- tbl_df(dat)
+#dat <- select(dat, ANIO, VIA, CODIGO.MES, MES, ST)
+dat16 <- dat[dat$ANIO == 2016,]
+dat16g <- group_by(dat16, CALLE)
+dat16g <- summarize(dat16g, TOTAL = sum(as.numeric(CANTIDAD)))
+
+dat16g <- arrange(dat16g, desc(TOTAL))
+head(dat16g) %>% pander
+barplot(dat16g$TOTAL, main = "Infracciones de la Campaña \"YO ESTACIONO PÉSIMO\" \n Distrito de Miraflores, 2016", names.arg= c("Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"), cex.names = .7, col = "steelblue")
+ 
+#Resoluciones de edificacion - son varios tipos...
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/RESOL-DE-EDIFI/data.csv/?auth_key=", api))
+
+unique(dat$ASUNTO)
+unique(dat$URBANIZACION)
+dim(dat)
+colnames(dat)
+head(dat)
+
+#licencias de edificacion
+dat2 <- read.csv("lic_de_edif.csv")
+dim(dat2)
+colnames(dat2)
+head(dat2)
+
+#Resolucion de infracciones impuestas
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/RESOL-DE-SANCI-IMPUE/data.csv/?auth_key=", api))
+
+
+#infracciones de construccion
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/CONST/data.csv/?auth_key=", api))
+
+#infraccion por ruidos
+dat <- read.csv(paste0("http://miraflores.cloudapi.junar.com/api/v2/datastreams/RUIDO/data.csv/?auth_key=", api))
+
+
+
+#######################################################
+#otros GUID
+
+#RANKI-DE-EMPRE-INFRA - combis con infracciones y cantidad de ellas.
+
+
+
+#San isidro
+
+apiSI <- "3b0fd5cdac5bd3096410ed1a546791b4d13db304"
+
+#licencias de construccion
+dat <- read.csv(paste0("http://api.datosabiertos.msi.gob.pe/api/v2/datastreams/LICEN-DE-EDIFI/data.csv/?auth_key=", apiSI))
+
+
+```
+
